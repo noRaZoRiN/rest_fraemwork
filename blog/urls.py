@@ -1,12 +1,10 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import CategoryViewSet, PublicationListCreateAPIView, PublicationRetrieveUpdateDestroyAPIView
+from django.urls import path
 
-router = DefaultRouter()
-router.register(r'categories', CategoryViewSet)
+from .views import CategoryViewSet, CategoryRetrieveupdateDestroyAPIView, PublicationListCreateAPIView, PublicationRetrieveUpdateDestroyAPIView
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('categories/<int:pk>/', include('rest_framework.urls', namespace='rest_framework')),
+    path('categories/', CategoryViewSet.as_view(), name='category-list-create'),
+    path('categories/<int:pk>/', CategoryRetrieveupdateDestroyAPIView.as_view(), name='category-retrieve-update-destroy'),
     path('publications/', PublicationListCreateAPIView.as_view(), name='publication-list'),
+    path('publications/<int:pk>/', PublicationRetrieveUpdateDestroyAPIView.as_view(), name='publication-detail')
 ]
