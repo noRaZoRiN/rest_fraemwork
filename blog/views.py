@@ -1,8 +1,12 @@
+from rest_framework.viewsets import ModelViewSet
+from requests import Response
 from rest_framework import viewsets, permissions, generics
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.mixins import ListModelMixin
+from rest_framework.views import APIView
 
 from .models import Category, Publication
-from .serializers import CategorySerializer, PublicationSerializer
+from .serializers import CategorySerializer, PersonSerializer, PublicationSerializer
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -34,3 +38,15 @@ class PublicationRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIV
         if instance.user != self.request.user:
             raise PermissionDenied("You do not have permission to delete this publication.")
         instance.delete()
+
+
+class CategoryFilter(APIView):
+    def get(self, request):
+        name = request.query_params.get('name', None)
+        if name:
+            categories = Category.objects.filter(name__icontains=name)
+        else:
+            categories = Category.objects.all()
+
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
